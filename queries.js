@@ -34,6 +34,40 @@ const createLineTab2 = (request, response) => {
   })
 }
 
+const deleteLineTab2 = (request, response) => {
+  //const id = parseInt(request.params.id)
+  var data = request.params.data
+  var title = request.params.title
+  if(title === undefined) title = ""
+  console.log('deleting line with data = ' + data + ' and title = ' + title)
+
+  pool.query('DELETE FROM diary WHERE data = $1 AND title = $2', [data, title], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).send(`Line deleted`)
+  })
+}
+
+const updateLineTab2 = (request, response) => {
+  var old_data = request.params.data
+  var old_title = request.params.title
+  const { title, tag } = request.body
+  if(old_title === undefined) old_title = ""
+  if(title === undefined) title = ""
+  console.log('updating line from data = ' + old_data + ' and title = ' + old_title)
+  console.log('to new line with title = ' + title + ' and tag = ' + tag)
+  pool.query(
+    'UPDATE diary SET title = $1, tag = $2 WHERE data = $3 AND title = $4',[title, tag, old_data, old_title],
+    (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(200).send(`Line modified`)
+    }
+  )
+}
+
 const getUserById = (request, response) => {
   const id = parseInt(request.params.id)
 
@@ -83,6 +117,8 @@ module.exports = {
   getUsers,
   getAllDataTab2,
   createLineTab2,
+  deleteLineTab2,
+  updateLineTab2,
   getUserById,
   createUser,
   updateUser,

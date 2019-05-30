@@ -13,6 +13,7 @@ app.use(
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
   next();
 })
 app.get('/', (request, response) => {
@@ -22,6 +23,10 @@ app.get('/', (request, response) => {
 //app.get('/users', db.getUsers)
 app.get('/alldatatab2', db.getAllDataTab2)
 app.post('/createlinetab2', db.createLineTab2)
+app.delete('/deletelinetab2/:data/:title', db.deleteLineTab2)
+app.delete('/deletelinetab2/:data/', db.deleteLineTab2)
+app.put('/updatelinetab2/:data/:title', db.updateLineTab2)
+app.put('/updatelinetab2/:data/', db.updateLineTab2)
 //app.get('/diary', db.getDiary)
 //app.get('/users/:id', db.getUserById)
 //app.post('/users', db.createUser)
