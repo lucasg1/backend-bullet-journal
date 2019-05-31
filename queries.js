@@ -32,6 +32,15 @@ const getAllDataTab1 = (request, response) => {
   })
 }
 
+const getAllDataTab3 = (request, response) => {
+  pool.query('SELECT * FROM tab3', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
 const createLineTab2 = (request, response) => {
   const { data, title, tag, evento } = request.body
 
@@ -54,12 +63,23 @@ const createLineTab1 = (request, response) => {
   })
 }
 
+const createLineTab3 = (request, response) => {
+  const { data, title, tag, evento } = request.body
+
+  pool.query('INSERT INTO tab3 (data, title, tag, evento) VALUES ($1, $2, $3, $4)', [data, title, tag, evento], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(201).send(`Line created`)
+  })
+}
+
 const deleteLineTab2 = (request, response) => {
   //const id = parseInt(request.params.id)
   var data = request.params.data
   var title = request.params.title
   if(title === undefined) title = ""
-  console.log('deleting line with data = ' + data + ' and title = ' + title)
+  console.log('deleting line from tab2 with data = ' + data + ' and title = ' + title)
 
   pool.query('DELETE FROM diary WHERE data = $1 AND title = $2', [data, title], (error, results) => {
     if (error) {
@@ -74,9 +94,24 @@ const deleteLineTab1 = (request, response) => {
   var data = request.params.data
   var title = request.params.title
   if(title === undefined) title = ""
-  console.log('deleting line with data = ' + data + ' and title = ' + title)
+  console.log('deleting line from tab1 with data = ' + data + ' and title = ' + title)
 
   pool.query('DELETE FROM tab1 WHERE data = $1 AND title = $2', [data, title], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).send(`Line deleted`)
+  })
+}
+
+const deleteLineTab3 = (request, response) => {
+  //const id = parseInt(request.params.id)
+  var data = request.params.data
+  var title = request.params.title
+  if(title === undefined) title = ""
+  console.log('deleting line from tab3 with data = ' + data + ' and title = ' + title)
+
+  pool.query('DELETE FROM tab3 WHERE data = $1 AND title = $2', [data, title], (error, results) => {
     if (error) {
       throw error
     }
@@ -140,6 +175,28 @@ const updateTitleLineTab1 = (request, response) => {
   )
 }
 
+const updateLineTab3 = (request, response) => {
+  var old_data = request.params.data
+  var old_title = request.params.title
+  const { title, data } = request.body
+  if(old_title === undefined) old_title = ""
+  if(title === undefined) title = ""
+  console.log('updating line from data = ' + old_data + ' and title = ' + old_title)
+  console.log('to new line with title = ' + title + ' and data = ' + data)
+  pool.query(
+    'UPDATE tab3 SET title = $1, data = $2 WHERE data = $3 AND title = $4',[title, data, old_data, old_title],
+    (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(200).send(`Line modified`)
+    }
+  )
+}
+
+
+
+
 const getUserById = (request, response) => {
   const id = parseInt(request.params.id)
 
@@ -188,14 +245,19 @@ const deleteUser = (request, response) => {
 module.exports = {
   getUsers,
   getAllDataTab2,
-  getAllDataTab1, 
+  getAllDataTab1,
+  getAllDataTab3, 
   createLineTab2,
   createLineTab1,
+  createLineTab3,
   deleteLineTab2,
   deleteLineTab1,
+  deleteLineTab3,
   updateLineTab2,
   updateDataLineTab1,
   updateTitleLineTab1,
+  updateLineTab3,
+
   getUserById,
   createUser,
   updateUser,
