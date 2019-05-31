@@ -22,11 +22,23 @@ app.get('/', (request, response) => {
 
 //app.get('/users', db.getUsers)
 app.get('/alldatatab2', db.getAllDataTab2)
+app.get('/alldatatab1', db.getAllDataTab1)
+
 app.post('/createlinetab2', db.createLineTab2)
+app.post('/createlinetab1', db.createLineTab1)
+
 app.delete('/deletelinetab2/:data/:title', db.deleteLineTab2)
 app.delete('/deletelinetab2/:data/', db.deleteLineTab2)
+app.delete('/deletelinetab1/:data/:title', db.deleteLineTab1)
+app.delete('/deletelinetab1/:data/', db.deleteLineTab1)
+
 app.put('/updatelinetab2/:data/:title', db.updateLineTab2)
 app.put('/updatelinetab2/:data/', db.updateLineTab2)
+
+app.put('/updatedatalinetab1/:data/:title', db.updateDataLineTab1)
+app.put('/updatedatalinetab1/:data/', db.updateDataLineTab1)
+app.put('/updatetitlelinetab1/:data/:title', db.updateTitleLineTab1)
+app.put('/updatetitlelinetab1/:data/', db.updateTitleLineTab1)
 //app.get('/diary', db.getDiary)
 //app.get('/users/:id', db.getUserById)
 //app.post('/users', db.createUser)

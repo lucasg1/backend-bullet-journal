@@ -23,10 +23,30 @@ const getAllDataTab2 = (request, response) => {
   })
 }
 
+const getAllDataTab1 = (request, response) => {
+  pool.query('SELECT * FROM tab1', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
 const createLineTab2 = (request, response) => {
   const { data, title, tag, evento } = request.body
 
   pool.query('INSERT INTO diary (data, title, tag, evento) VALUES ($1, $2, $3, $4)', [data, title, tag, evento], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(201).send(`Line created`)
+  })
+}
+
+const createLineTab1 = (request, response) => {
+  const { data, title, tag, evento } = request.body
+
+  pool.query('INSERT INTO tab1 (data, title, tag, evento) VALUES ($1, $2, $3, $4)', [data, title, tag, evento], (error, results) => {
     if (error) {
       throw error
     }
@@ -49,6 +69,21 @@ const deleteLineTab2 = (request, response) => {
   })
 }
 
+const deleteLineTab1 = (request, response) => {
+  //const id = parseInt(request.params.id)
+  var data = request.params.data
+  var title = request.params.title
+  if(title === undefined) title = ""
+  console.log('deleting line with data = ' + data + ' and title = ' + title)
+
+  pool.query('DELETE FROM tab1 WHERE data = $1 AND title = $2', [data, title], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).send(`Line deleted`)
+  })
+}
+
 const updateLineTab2 = (request, response) => {
   var old_data = request.params.data
   var old_title = request.params.title
@@ -59,6 +94,43 @@ const updateLineTab2 = (request, response) => {
   console.log('to new line with title = ' + title + ' and tag = ' + tag)
   pool.query(
     'UPDATE diary SET title = $1, tag = $2 WHERE data = $3 AND title = $4',[title, tag, old_data, old_title],
+    (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(200).send(`Line modified`)
+    }
+  )
+}
+
+const updateDataLineTab1 = (request, response) => {
+  var old_data = request.params.data
+  var old_title = request.params.title
+  const {data} = request.body
+  if(old_title === undefined) old_title = ""
+  console.log('updating line from data = ' + old_data + ' and title = ' + old_title)
+  console.log('to new line with data = ' + data)
+  pool.query(
+    'UPDATE tab1 SET data = $1 WHERE data = $2 AND title = $3',[data, old_data, old_title],
+    (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(200).send(`Line modified`)
+    }
+  )
+}
+
+const updateTitleLineTab1 = (request, response) => {
+  var old_data = request.params.data
+  var old_title = request.params.title
+  const {title} = request.body
+  if(old_title === undefined) old_title = ""
+  if(title === undefined) title = ""
+  console.log('updating line from data = ' + old_data + ' and title = ' + old_title)
+  console.log('to new line with title = ' + title)
+  pool.query(
+    'UPDATE tab1 SET title = $1 WHERE data = $2 AND title = $3',[title, old_data, old_title],
     (error, results) => {
       if (error) {
         throw error
@@ -116,9 +188,14 @@ const deleteUser = (request, response) => {
 module.exports = {
   getUsers,
   getAllDataTab2,
+  getAllDataTab1, 
   createLineTab2,
+  createLineTab1,
   deleteLineTab2,
+  deleteLineTab1,
   updateLineTab2,
+  updateDataLineTab1,
+  updateTitleLineTab1,
   getUserById,
   createUser,
   updateUser,
