@@ -47,6 +47,10 @@ app.put('/updatetitlelinetab1/:data/', db.updateTitleLineTab1)
 app.put('/updatetitlelinetab3/:data/', db.updateLineTab3)
 app.put('/updatetitlelinetab3/:data/:title', db.updateLineTab3)
 
+app.post('/users/register', db.registerUser)
+app.post('/users/login', db.loginUser)
+
+
 
 //app.get('/diary', db.getDiary)
 //app.get('/users/:id', db.getUserById)

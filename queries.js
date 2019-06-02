@@ -1,4 +1,5 @@
 const Pool = require('pg').Pool
+const bcrypt = require('bcrypt')
 const pool = new Pool({
   user: 'me',
   host: 'localhost',
@@ -194,8 +195,63 @@ const updateLineTab3 = (request, response) => {
   )
 }
 
+const loginUser = (request, response) => {
+  const { name, email, password } = request.body
 
+pool.query('SELECT email,password FROM users WHERE email = $1', [email], (error, results) => {
+  if(error){
+    throw error
+  }
+  if(results.rows[0]){
+    var userData = results.rows[0]
+    var pwd = bcrypt.hashSync(password,5)/*.substring(0,6)*/;
+    console.log('the hashed password is ' + pwd)
+    console.log('the stored hashed password is '+ userData.password/*.substring(0,6)*/)
+    if(bcrypt.compareSync(password,userData.password)){
+      console.log('email and password matches!')
+      console.log('Logging the user in!')
+      response.status(201).send('')
+    }
+    else{
+      console.log('Login failed!')
+      console.log('Wrong password!!!')
+      response.status(400).send(`Wrong password!`)
+    }
+  }
+  else{
+    console.log('Login failed!')
+    console.log('Wrong email!')
+    response.status(400).send(`Wrong email!`)
+  }
+}
+)
+}
 
+const registerUser = (request, response) => {
+  const { name, email, password } = request.body
+
+pool.query('SELECT id FROM users WHERE email = $1', [email], (error, results) => {
+  if(error){
+    throw error
+  }
+  if(results.rows[0]){
+    console.log('User with email '+ email + ' already exist')
+    response.status(400).send(`User with that EMAIL already exist`)
+  }
+  else{
+    var pwd = bcrypt.hashSync(password,5);
+
+    console.log('Registering user: ' + email)
+    pool.query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3)', [name, email, pwd], (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(201).send(`User added with ID: ${results.insertId}`)
+    })
+  }
+}
+)
+}
 
 const getUserById = (request, response) => {
   const id = parseInt(request.params.id)
@@ -257,6 +313,8 @@ module.exports = {
   updateDataLineTab1,
   updateTitleLineTab1,
   updateLineTab3,
+  loginUser,
+  registerUser,
 
   getUserById,
   createUser,
