@@ -25,7 +25,9 @@ const getAllDataTab2 = (request, response) => {
 }
 
 const getAllDataTab1 = (request, response) => {
-  pool.query('SELECT * FROM tab1', (error, results) => {
+  var user_email = request.headers['authorization']
+  //console.log('the header has value '+ user_email)
+  pool.query('SELECT * FROM tab1 WHERE email = $1',[user_email], (error, results) => {
     if (error) {
       throw error
     }
@@ -54,9 +56,10 @@ const createLineTab2 = (request, response) => {
 }
 
 const createLineTab1 = (request, response) => {
+  var user_email = request.headers['authorization']
   const { data, title, tag, evento } = request.body
 
-  pool.query('INSERT INTO tab1 (data, title, tag, evento) VALUES ($1, $2, $3, $4)', [data, title, tag, evento], (error, results) => {
+  pool.query('INSERT INTO tab1 (email, data, title, tag, evento) VALUES ($1, $2, $3, $4, $5)', [user_email, data, title, tag, evento], (error, results) => {
     if (error) {
       throw error
     }
