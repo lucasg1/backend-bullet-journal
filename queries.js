@@ -16,7 +16,8 @@ const getUsers = (request, response) => {
   })
 }
 const getAllDataTab2 = (request, response) => {
-  pool.query('SELECT * FROM diary', (error, results) => {
+  var user_email = request.headers['authorization']
+  pool.query('SELECT * FROM diary WHERE email = $1',[user_email], (error, results) => {
     if (error) {
       throw error
     }
@@ -46,9 +47,10 @@ const getAllDataTab3 = (request, response) => {
 }
 
 const createLineTab2 = (request, response) => {
+  var user_email = request.headers['authorization']
   const { data, title, tag, evento } = request.body
 
-  pool.query('INSERT INTO diary (data, title, tag, evento) VALUES ($1, $2, $3, $4)', [data, title, tag, evento], (error, results) => {
+  pool.query('INSERT INTO diary (email, data, title, tag, evento) VALUES ($1, $2, $3, $4, $5)', [user_email, data, title, tag, evento], (error, results) => {
     if (error) {
       throw error
     }
@@ -81,13 +83,14 @@ const createLineTab3 = (request, response) => {
 }
 
 const deleteLineTab2 = (request, response) => {
+  var user_email = request.headers['authorization']
   //const id = parseInt(request.params.id)
   var data = request.params.data
   var title = request.params.title
   if(title === undefined) title = ""
   console.log('deleting line from tab2 with data = ' + data + ' and title = ' + title)
 
-  pool.query('DELETE FROM diary WHERE data = $1 AND title = $2', [data, title], (error, results) => {
+  pool.query('DELETE FROM diary WHERE data = $1 AND title = $2 AND email = $3', [data, title, user_email], (error, results) => {
     if (error) {
       throw error
     }
@@ -128,6 +131,7 @@ const deleteLineTab3 = (request, response) => {
 }
 
 const updateLineTab2 = (request, response) => {
+  var user_email = request.headers['authorization']
   var old_data = request.params.data
   var old_title = request.params.title
   const { title, tag } = request.body
@@ -136,7 +140,7 @@ const updateLineTab2 = (request, response) => {
   console.log('updating line from data = ' + old_data + ' and title = ' + old_title)
   console.log('to new line with title = ' + title + ' and tag = ' + tag)
   pool.query(
-    'UPDATE diary SET title = $1, tag = $2 WHERE data = $3 AND title = $4',[title, tag, old_data, old_title],
+    'UPDATE diary SET title = $1, tag = $2 WHERE data = $3 AND title = $4 AND email = $5',[title, tag, old_data, old_title, user_email],
     (error, results) => {
       if (error) {
         throw error
