@@ -36,7 +36,8 @@ const getAllDataTab1 = (request, response) => {
 }
 
 const getAllDataTab3 = (request, response) => {
-  pool.query('SELECT * FROM tab3', (error, results) => {
+  var user_email = request.headers['authorization']
+  pool.query('SELECT * FROM tab3 WHERE email = $1',[user_email], (error, results) => {
     if (error) {
       throw error
     }
@@ -68,9 +69,10 @@ const createLineTab1 = (request, response) => {
 }
 
 const createLineTab3 = (request, response) => {
+  var user_email = request.headers['authorization']
   const { data, title, tag, evento } = request.body
 
-  pool.query('INSERT INTO tab3 (data, title, tag, evento) VALUES ($1, $2, $3, $4)', [data, title, tag, evento], (error, results) => {
+  pool.query('INSERT INTO tab3 (email, data, title, tag, evento) VALUES ($1, $2, $3, $4, $5)', [user_email, data, title, tag, evento], (error, results) => {
     if (error) {
       throw error
     }
@@ -94,13 +96,14 @@ const deleteLineTab2 = (request, response) => {
 }
 
 const deleteLineTab1 = (request, response) => {
+  var user_email = request.headers['authorization']
   //const id = parseInt(request.params.id)
   var data = request.params.data
   var title = request.params.title
   if(title === undefined) title = ""
   console.log('deleting line from tab1 with data = ' + data + ' and title = ' + title)
 
-  pool.query('DELETE FROM tab1 WHERE data = $1 AND title = $2', [data, title], (error, results) => {
+  pool.query('DELETE FROM tab1 WHERE data = $1 AND title = $2 AND email = $3', [data, title, user_email], (error, results) => {
     if (error) {
       throw error
     }
@@ -109,13 +112,14 @@ const deleteLineTab1 = (request, response) => {
 }
 
 const deleteLineTab3 = (request, response) => {
+  var user_email = request.headers['authorization']
   //const id = parseInt(request.params.id)
   var data = request.params.data
   var title = request.params.title
   if(title === undefined) title = ""
   console.log('deleting line from tab3 with data = ' + data + ' and title = ' + title)
 
-  pool.query('DELETE FROM tab3 WHERE data = $1 AND title = $2', [data, title], (error, results) => {
+  pool.query('DELETE FROM tab3 WHERE data = $1 AND title = $2 AND email = $3', [data, title, user_email], (error, results) => {
     if (error) {
       throw error
     }
@@ -143,6 +147,7 @@ const updateLineTab2 = (request, response) => {
 }
 
 const updateDataLineTab1 = (request, response) => {
+  var user_email = request.headers['authorization']
   var old_data = request.params.data
   var old_title = request.params.title
   const {data} = request.body
@@ -150,7 +155,7 @@ const updateDataLineTab1 = (request, response) => {
   console.log('updating line from data = ' + old_data + ' and title = ' + old_title)
   console.log('to new line with data = ' + data)
   pool.query(
-    'UPDATE tab1 SET data = $1 WHERE data = $2 AND title = $3',[data, old_data, old_title],
+    'UPDATE tab1 SET data = $1 WHERE data = $2 AND title = $3 AND email = $4',[data, old_data, old_title, user_email],
     (error, results) => {
       if (error) {
         throw error
@@ -161,6 +166,7 @@ const updateDataLineTab1 = (request, response) => {
 }
 
 const updateTitleLineTab1 = (request, response) => {
+  var user_email = request.headers['authorization']
   var old_data = request.params.data
   var old_title = request.params.title
   const {title} = request.body
@@ -169,7 +175,7 @@ const updateTitleLineTab1 = (request, response) => {
   console.log('updating line from data = ' + old_data + ' and title = ' + old_title)
   console.log('to new line with title = ' + title)
   pool.query(
-    'UPDATE tab1 SET title = $1 WHERE data = $2 AND title = $3',[title, old_data, old_title],
+    'UPDATE tab1 SET title = $1 WHERE data = $2 AND title = $3 AND email = $4',[title, old_data, old_title, user_email],
     (error, results) => {
       if (error) {
         throw error
@@ -180,6 +186,7 @@ const updateTitleLineTab1 = (request, response) => {
 }
 
 const updateLineTab3 = (request, response) => {
+  var user_email = request.headers['authorization']
   var old_data = request.params.data
   var old_title = request.params.title
   const { title, data } = request.body
@@ -188,7 +195,7 @@ const updateLineTab3 = (request, response) => {
   console.log('updating line from data = ' + old_data + ' and title = ' + old_title)
   console.log('to new line with title = ' + title + ' and data = ' + data)
   pool.query(
-    'UPDATE tab3 SET title = $1, data = $2 WHERE data = $3 AND title = $4',[title, data, old_data, old_title],
+    'UPDATE tab3 SET title = $1, data = $2 WHERE data = $3 AND title = $4 AND email = $5',[title, data, old_data, old_title, user_email],
     (error, results) => {
       if (error) {
         throw error
