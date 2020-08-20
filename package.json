@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/bcrypt": "^3.0.0",
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "crypt": "0.0.2",
     "express": "^4.16.4",
     "pg": "^7.9.0"
